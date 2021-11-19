@@ -1,0 +1,35 @@
+We are creating three different objects here. The first one is the different menu item options we will give our customers to choose from.
+ The next is a category that we will assign to each menu item. We will link these together with the category ManyToMany field on our MenuItem.
+ The final object we are creating is the actual order. Once we submit an order, this will be crated and we will link all of the products that were selected to it. 
+This will be used on the restaurant side later on.
+Before continuing you will need to go into the admin panel and add some menu items and categories.
+Now that we have some menu items added, let’s create our view for this in our customer/views.py:
+
+
+This is a complicated view, let’s start with the get method.
+ First we are grabbing all of the menu items for each category that we created.
+ We are then passing those items into our template.
+For the post method, we need to handle the form submission. 
+We are creating a dictionary with an items list. 
+This is where we will store our selected items.
+ We can then use request.POST.getlist(‘items[]’). 
+This will grab all of the selected items with a name of ‘items[]’ which we will give to each of the items in our template. 
+So this will grab every checked item. We can then go and loop through this list, get each item from the database and get all of the needed information from it. 
+Then we can append it to our list in the dictionary.
+Next we need to get each price and id.
+ We need each price to calculate a total price and we need each id to add it as a relationship to our order object that we are about to create. 
+So we loop thorugh our items and get those two pieces of information.
+ We create an order with OrderModel.objects.create(price=price). 
+The order.items.add(*items) line will go through each item id in the list and add it to the order that we just made.
+ Finally we pass all of this information into the context and render the template.
+Now let’s create our HTML templates. First let’s build the order.html template.
+
+
+
+In this file, we are looping through each category and listing out each menu item in the database.
+ We are creating a checkbox to allow the user to select the items they want to purchase. 
+In each checkbox there are two important additions. 
+There is a name set as “items[]” for each of the items there is also a value that is set to that item’s primary key.
+ When we grab the selected we are going to find them by using the name using the getlist function in our views and it will return a list of the values of the selected items, which in this case is the primary keys. 
+Finally, there is a button at the bottom that submits the form as a post request.
+Now let’s build the order confirmation after they place an order.
